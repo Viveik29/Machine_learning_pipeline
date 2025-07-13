@@ -11,9 +11,9 @@ from urllib.parse import urlparse
 import mlflow
 import pickle
 
-# os.environ["MLFLOW_TRACKING_URI"] = "https://dagshub.com/viveik16693/Machine_learning_pipeline.mlflow"
-# os.environ["MLFLOW_TRACKING_USERNAME"]="dvc remote modify origin --local user viveik16693"
-# os.environ["MLFLOW_TRACKING_PASSWORD"]="dvc remote modify origin --local password 265a35ffa313931d4d42d67acb23b1b5ddc92b08"
+os.environ["MLFLOW_TRACKING_URI"] = "https://dagshub.com/viveik16693/Machine_learning_pipeline.mlflow"
+os.environ["MLFLOW_TRACKING_USERNAME"]="viveik16693"
+os.environ["MLFLOW_TRACKING_PASSWORD"]="265a35ffa313931d4d42d67acb23b1b5ddc92b08"
 import dagshub
 
 def hyperparameter_tunning(xtrain,ytrain,param_grid):
@@ -21,9 +21,6 @@ def hyperparameter_tunning(xtrain,ytrain,param_grid):
     gridsearch = GridSearchCV(estimator=rf,param_grid=param_grid,cv=3,verbose=2,n_jobs=-1)
     gridsearch.fit(xtrain,ytrain)
     return gridsearch
-
-
-
 
 
 def model_trainning(input_path,model_path,random_state,n_estimaters,max_depth):
@@ -52,6 +49,7 @@ def model_trainning(input_path,model_path,random_state,n_estimaters,max_depth):
             'min_samples_split': [2],
             'min_samples_leaf': [1]
         }
+        
 
     gridsearch = hyperparameter_tunning(xtrain,ytrain,param_grid)
     best_model = gridsearch.best_estimator_
@@ -73,20 +71,43 @@ def model_trainning(input_path,model_path,random_state,n_estimaters,max_depth):
     mlflow.log_text(str(cm),"confusion_matrix.txt")
     mlflow.log_text(cr,"classification_report.txt")
 
-    tracking_url_type_store=urlparse(mlflow.get_tracking_uri()).scheme
-
-    if tracking_url_type_store!='file':
-        mlflow.sklearn.log_model(best_model,"model",registered_model_name="Best Model")
-    else:
-        mlflow.sklearn.log_model(best_model, "model",signature=signature)
-
-    ## create the directory to save the model
     os.makedirs(os.path.dirname(model_path),exist_ok=True)
 
     filename=model_path
     pickle.dump(best_model,open(filename,'wb'))
 
     print(f"Model saved to {model_path}")
+
+    tracking_url_type_store=urlparse(mlflow.get_tracking_uri()).scheme
+    if tracking_url_type_store != 'file':
+        # Log and register model in MLflow Registry
+        mlflow.sklearn.log_model(
+            sk_model=best_model,
+            artifact_path="model",
+            registered_model_name="Best_Model"  # <-- Model Registry name
+        )
+    else:
+        mlflow.sklearn.log_model(
+            sk_model=best_model,
+            artifact_path="model",
+            signature=signature
+        )
+
+   #if tracking_url_type_store!='file':
+
+
+      # mlflow.sklearn.log_model(best_model,name="model")
+        #mlflow.sklearn.log_model(best_model,"model",registered_model_name="Best Model")
+    # else:
+    #     mlflow.sklearn.log_model(best_model, "model",signature=signature)
+
+    ## create the directory to save the model
+    # os.makedirs(os.path.dirname(model_path),exist_ok=True)
+
+    # filename=model_path
+    # pickle.dump(best_model,open(filename,'wb'))
+
+    # print(f"Model saved to {model_path}")
 
 
 if __name__ =="__main__":

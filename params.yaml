@@ -7,7 +7,7 @@ train:
   data: data/raw/data.csv
   model: models/model.pkl
   random_state: 42
-  n_estimaters: 10
-  max_depth: 5
+  n_estimaters: 5
+  max_depth: 3
 
 
