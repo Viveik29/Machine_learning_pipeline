@@ -1,6 +1,6 @@
 preprocess:
   input: data/raw/data.csv
-  output: data/preprocess/data.csv
+  output: data/processed/data.csv 
 
 train:
 

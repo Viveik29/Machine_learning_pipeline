@@ -1,7 +1,7 @@
 import pandas as pd
 import os
-import sys
-from sklearn.ensemble import RandomForestClassifier
+import sys 
+from sklearn.ensemble import RandomForestClassifier 
 from sklearn.model_selection import train_test_split , GridSearchCV
 from mlflow.models import infer_signature 
 import dagshub
@@ -77,29 +77,35 @@ def model_trainning(input_path,model_path,random_state,n_estimaters,max_depth):
     pickle.dump(best_model,open(filename,'wb'))
 
     print(f"Model saved to {model_path}")
-
+    
     tracking_url_type_store=urlparse(mlflow.get_tracking_uri()).scheme
-    if tracking_url_type_store != 'file':
-        # Log and register model in MLflow Registry
-        mlflow.sklearn.log_model(
-            sk_model=best_model,
-            artifact_path="model",
-            registered_model_name="Best_Model"  # <-- Model Registry name
-        )
-    else:
-        mlflow.sklearn.log_model(
-            sk_model=best_model,
-            artifact_path="model",
-            signature=signature
-        )
 
-   #if tracking_url_type_store!='file':
-
-
-      # mlflow.sklearn.log_model(best_model,name="model")
-        #mlflow.sklearn.log_model(best_model,"model",registered_model_name="Best Model")
+    # if tracking_url_type_store!='file':
+    #     mlflow.sklearn.log_model(best_model,name="model")
     # else:
     #     mlflow.sklearn.log_model(best_model, "model",signature=signature)
+
+    
+    # if tracking_url_type_store!= 'file':
+    #      mlflow.sklearn.log_model(sk_model=best_model,name ="model",input_example=xtest,registered_model_name="Best_Model")
+    # else:
+    #      mlflow.sklearn.log_model(best_model, "model",signature=signature)
+         
+         
+    # if tracking_url_type_store != 'file':
+    #     # Log and register model in MLflow Registry
+    #     mlflow.sklearn.log_model(
+    #         sk_model=best_model,
+    #         artifact_path="model",
+    #         registered_model_name="Best_Model"  # <-- Model Registry name
+    #     )
+    # else:
+    #     mlflow.sklearn.log_model(
+    #         sk_model=best_model,
+    #         artifact_path="model",
+    #         signature=signature
+    #     )
+
 
     ## create the directory to save the model
     # os.makedirs(os.path.dirname(model_path),exist_ok=True)
