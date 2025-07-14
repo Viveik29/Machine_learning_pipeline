@@ -82,7 +82,7 @@ def model_trainning(input_path,model_path,random_state,n_estimaters,max_depth):
 
     # if tracking_url_type_store!='file':
     #     mlflow.sklearn.log_model(best_model,name="model")
-    # else:
+    # else
     #     mlflow.sklearn.log_model(best_model, "model",signature=signature)
 
     
